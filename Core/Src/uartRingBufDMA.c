@@ -103,7 +103,7 @@ static size_t labscim_buffer_peek(void *data, size_t size)
 		/* check your buffer parameter */
 		return(0);
 	}
-	size = LABSCIM_MIN(size,labscim_buffer_used(buf));
+	size = LABSCIM_MIN(size,labscim_buffer_used());
 	if(buf.rd_offset + size < buf.size)
 	{
 		//no warp
