@@ -11,5 +11,14 @@
         "main.h": "c",
         "string.h": "c",
         "radioenge_modem.h": "c"
-    }
+    },
+    "cmake.sourceDirectory": "/home/microcontroladores/Desktop/Aniel/radioenge_blackpill_freertos/Drivers/CMSIS/NN",
+    "vsmqtt.brokerProfiles": [
+        {
+            "name": "aniel",
+            "host": "labscgw.eletrica.eng.br",
+            "port": 1883,
+            "clientId": "vsmqtt_client_3932"
+        }
+    ]
 }

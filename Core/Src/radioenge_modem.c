@@ -18,11 +18,16 @@ extern osTimerId_t ModemLedTimerHandle;
 extern osMessageQueueId_t uartQueueHandle;
 extern osTimerId_t DutyCycleTimerHandle;
 
-#define NUMBER_OF_STRINGS (2)
+#define NUMBER_OF_STRINGS (7)
 #define STRING_LENGTH (255)
 char gConfigCmds[NUMBER_OF_STRINGS][STRING_LENGTH + 1] = {
-    "AT\r\n",
-    "AT\r\n"
+    "AT+CFM=0\r\n",
+    "AT+APPKEY=81:2b:38:b1:2d:b6:56:42:15:52:67:d6:a6:c9:07:4e\r\n",
+    "AT+APPEUI=00:00:00:00:00:00:00:00\r\n",
+    "AT+CHMASK=0000:00FF:0000:0000:0004:0000\r\n",
+    "AT+ADR=1\r\n",
+    "AT+NJM=1\r\n",
+    "AT+JOIN\r\n"
     };
 
 
@@ -80,7 +85,58 @@ void SetRadioState(RADIO_STATE state)
 
 void ModemLedCallback(void *argument) 
 {
-   
+       //here we use gRadioState without semaphore because a preemption will only cause a momentary led glitch    
+    switch(gRadioState)
+    {
+    case RADIO_RESET:
+    {
+        HAL_GPIO_TogglePin(LED1_RED_GPIO_Port, LED1_RED_Pin);
+        HAL_GPIO_WritePin(LED2_YELLOW_GPIO_Port, LED2_YELLOW_Pin, 0);
+        HAL_GPIO_WritePin(LED3_GREEN_GPIO_Port, LED3_GREEN_Pin, 0);
+        HAL_GPIO_WritePin(LED4_BLUE_GPIO_Port, LED4_BLUE_Pin, 0); 
+        break;       
+    }
+    case RADIO_CONFIGURING:
+    {
+        HAL_GPIO_WritePin(LED1_RED_GPIO_Port, LED1_RED_Pin,0);
+        HAL_GPIO_TogglePin(LED2_YELLOW_GPIO_Port, LED2_YELLOW_Pin);
+        HAL_GPIO_WritePin(LED3_GREEN_GPIO_Port, LED3_GREEN_Pin,0);
+        HAL_GPIO_WritePin(LED4_BLUE_GPIO_Port, LED4_BLUE_Pin, 0);        
+        break;       
+    }
+    case RADIO_JOINING:
+    {
+        HAL_GPIO_WritePin(LED1_RED_GPIO_Port, LED1_RED_Pin,0);
+        HAL_GPIO_WritePin(LED2_YELLOW_GPIO_Port, LED2_YELLOW_Pin,0);
+        HAL_GPIO_TogglePin(LED3_GREEN_GPIO_Port, LED3_GREEN_Pin);
+        HAL_GPIO_WritePin(LED4_BLUE_GPIO_Port, LED4_BLUE_Pin, 0);        
+        break;       
+    }
+    case RADIO_READY:
+    {
+        HAL_GPIO_WritePin(LED1_RED_GPIO_Port, LED1_RED_Pin,0);
+        HAL_GPIO_WritePin(LED2_YELLOW_GPIO_Port, LED2_YELLOW_Pin,0);
+        HAL_GPIO_WritePin(LED3_GREEN_GPIO_Port, LED3_GREEN_Pin,1);
+        HAL_GPIO_WritePin(LED4_BLUE_GPIO_Port, LED4_BLUE_Pin, 0);        
+        break;       
+    }
+    case RADIO_DUTYCYCLED:
+    {
+        HAL_GPIO_WritePin(LED1_RED_GPIO_Port, LED1_RED_Pin,0);
+        HAL_GPIO_WritePin(LED2_YELLOW_GPIO_Port, LED2_YELLOW_Pin,0);
+        HAL_GPIO_WritePin(LED3_GREEN_GPIO_Port, LED3_GREEN_Pin,1);
+        HAL_GPIO_TogglePin(LED4_BLUE_GPIO_Port, LED4_BLUE_Pin);        
+        break;       
+    }
+    default:
+    {
+        HAL_GPIO_TogglePin(LED1_RED_GPIO_Port, LED1_RED_Pin);
+        HAL_GPIO_TogglePin(LED2_YELLOW_GPIO_Port, LED2_YELLOW_Pin);
+        HAL_GPIO_TogglePin(LED3_GREEN_GPIO_Port, LED3_GREEN_Pin);
+        HAL_GPIO_TogglePin(LED4_BLUE_GPIO_Port, LED4_BLUE_Pin);        
+        break;       
+    }    
+    }
 }
 
 
